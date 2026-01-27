@@ -37,6 +37,40 @@ The experiments focus on applying computational techniques to process and analyz
     - Intensity mapping and normalization.
     - Visualizing results (Histograms and CDF plots).
 
+### 3. Bit Plane Slicing & Removal
+**Directory:** [Bit_Slicing](./Bit_Slicing)
+- **Overview:** Visualization of individual bit planes and the effect of removing them on image quality.
+- **Key Operations:**
+    - Bitwise AND slicing for planes 0-7.
+    - Reconstruction of specific bit planes.
+    - Analysis of MSB vs LSB contribution.
+
+### 4. Huffman Coding Compression
+**Directory:** [Huffman_Coding](./Huffman_Coding)
+- **Overview:** Implementation of lossless image compression using Huffman coding techniques.
+- **Key Steps:**
+    - Probability calculation of pixel intensities.
+    - Huffman dictionary generation.
+    - Binary encoding and decoding.
+    - Compression ratio analysis.
+
+### 5. Shannon Coding Compression
+**Directory:** [Shannon Coding](./Shannon%20Coding)
+- **Overview:** Image compression using Shannon coding based on symbol probability and cumulative distribution.
+- **Key Steps:**
+    - Symbol extraction and sorting.
+    - Code length calculation using Shannon's formula.
+    - Binary code generation from cumulative probabilities.
+    - Encoding and performance evaluation.
+
+### 6. Tambola Ticket Generator
+**Directory:** [Tambola Ticket](./Tambola%20Ticket)
+- **Overview:** Algorithmic generation of a valid 3x9 Tambola (Housie) ticket with structural constraints.
+- **Key Logic:**
+    - Random structural matrix generation (5 numbers/row, 1-3/col).
+    - Column-wise number assignment (e.g., Col 1: 1-9, Col 2: 10-19).
+    - Column sorting and final ticket validation.
+
 ## Technologies Used
 - MATLAB
 - Image processing libraries and functions
