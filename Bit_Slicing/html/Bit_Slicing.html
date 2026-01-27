@@ -1,0 +1,238 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Bit_Slicing</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2026-01-27"><meta name="DC.source" content="Bit_Slicing.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%------------------------------------------------------------</span>
+<span class="comment">% Date        : 26/01/2026</span>
+<span class="comment">% Created by  : Abhishek Kumar Jayswal</span>
+<span class="comment">% Experiment  : Bit Plane Slicing and Bit Plane Removal</span>
+<span class="comment">% Description :</span>
+<span class="comment">%   This program performs bit plane slicing on a grayscale</span>
+<span class="comment">%   image and visualizes individual bit planes (0 to 7).</span>
+<span class="comment">%   It also demonstrates the effect of removing selected</span>
+<span class="comment">%   bit planes from the original image.</span>
+<span class="comment">%------------------------------------------------------------</span>
+
+clc;            <span class="comment">% Clear command window</span>
+clear <span class="string">all</span>;      <span class="comment">% Remove all variables from workspace</span>
+close <span class="string">all</span>;      <span class="comment">% Close all open figure windows</span>
+
+<span class="comment">%------------------ Read and Display Original Image ------------------</span>
+I = rgb2gray(imread(<span class="string">'C:\Users\Abhishek\Desktop\DIP\Bit_Slicing\Image.jpg'</span>));   <span class="comment">% Convert RGB image to grayscale</span>
+[m, n] = size(I);                          <span class="comment">% Get image dimensions</span>
+
+figure;
+imshow(I);
+title(<span class="string">'Original Grayscale Image'</span>);
+
+<span class="comment">%------------------ Bit Plane Slicing ------------------</span>
+<span class="comment">% Each bit plane represents a specific bit (0 to 7) of</span>
+<span class="comment">% the grayscale image intensity values.</span>
+
+<span class="comment">% Pre-allocate matrices for efficiency</span>
+Bitp0 = zeros(m,n);
+Bitp1 = zeros(m,n);
+Bitp2 = zeros(m,n);
+Bitp3 = zeros(m,n);
+Bitp4 = zeros(m,n);
+Bitp5 = zeros(m,n);
+Bitp6 = zeros(m,n);
+Bitp7 = zeros(m,n);
+
+<span class="comment">% Extract individual bit planes using bitwise AND operation</span>
+<span class="keyword">for</span> ii = 1:m
+    <span class="keyword">for</span> jj = 1:n
+        Bitp0(ii,jj) = bitand(I(ii,jj), 1);     <span class="comment">% 0th bit plane (LSB)</span>
+        Bitp1(ii,jj) = bitand(I(ii,jj), 2);     <span class="comment">% 1st bit plane</span>
+        Bitp2(ii,jj) = bitand(I(ii,jj), 4);     <span class="comment">% 2nd bit plane</span>
+        Bitp3(ii,jj) = bitand(I(ii,jj), 8);     <span class="comment">% 3rd bit plane</span>
+        Bitp4(ii,jj) = bitand(I(ii,jj), 16);    <span class="comment">% 4th bit plane</span>
+        Bitp5(ii,jj) = bitand(I(ii,jj), 32);    <span class="comment">% 5th bit plane</span>
+        Bitp6(ii,jj) = bitand(I(ii,jj), 64);    <span class="comment">% 6th bit plane</span>
+        Bitp7(ii,jj) = bitand(I(ii,jj), 128);   <span class="comment">% 7th bit plane (MSB)</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">%------------------ Display Bit Planes ------------------</span>
+figure; imshow(Bitp0); title(<span class="string">'0th Bit Plane Image'</span>);
+figure; imshow(Bitp1); title(<span class="string">'1st Bit Plane Image'</span>);
+figure; imshow(Bitp2); title(<span class="string">'2nd Bit Plane Image'</span>);
+figure; imshow(Bitp3); title(<span class="string">'3rd Bit Plane Image'</span>);
+figure; imshow(Bitp4); title(<span class="string">'4th Bit Plane Image'</span>);
+figure; imshow(Bitp5); title(<span class="string">'5th Bit Plane Image'</span>);
+figure; imshow(Bitp6); title(<span class="string">'6th Bit Plane Image'</span>);
+figure; imshow(Bitp7); title(<span class="string">'7th Bit Plane Image'</span>);
+
+<span class="comment">%------------------ Bit Plane Removal ------------------</span>
+<span class="comment">% In this section, selected bit planes are removed from the</span>
+<span class="comment">% original image to observe their impact on image quality.</span>
+<span class="comment">% Bit planes removed: 0th, 5th, and 7th</span>
+
+bitpr0 = zeros(m,n);
+bitpr5 = zeros(m,n);
+bitpr7 = zeros(m,n);
+
+<span class="keyword">for</span> ii = 1:m
+    <span class="keyword">for</span> jj = 1:n
+        bitpr0(ii,jj) = bitand(I(ii,jj), 255 - 2^0);   <span class="comment">% Remove 0th bit plane</span>
+        bitpr5(ii,jj) = bitand(I(ii,jj), 255 - 2^5);   <span class="comment">% Remove 5th bit plane</span>
+        bitpr7(ii,jj) = bitand(I(ii,jj), 255 - 2^7);   <span class="comment">% Remove 7th bit plane</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">%------------------ Display Images after Bit Plane Removal ------------------</span>
+figure; imshow(bitpr0); title(<span class="string">'Image with 0th Bit Plane Removed'</span>);
+figure; imshow(bitpr5); title(<span class="string">'Image with 5th Bit Plane Removed'</span>);
+figure; imshow(bitpr7); title(<span class="string">'Image with 7th Bit Plane Removed'</span>);
+</pre><img vspace="5" hspace="5" src="Bit_Slicing_01.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_02.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_03.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_04.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_05.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_06.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_07.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_08.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_09.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_10.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_11.png" alt=""> <img vspace="5" hspace="5" src="Bit_Slicing_12.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Date        : 26/01/2026
+% Created by  : Abhishek Kumar Jayswal
+% Experiment  : Bit Plane Slicing and Bit Plane Removal
+% Description :
+%   This program performs bit plane slicing on a grayscale
+%   image and visualizes individual bit planes (0 to 7).
+%   It also demonstrates the effect of removing selected
+%   bit planes from the original image.
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+clc;            % Clear command window
+clear all;      % Remove all variables from workspace
+close all;      % Close all open figure windows
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Read and Display Original Image REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+I = rgb2gray(imread('C:\Users\Abhishek\Desktop\DIP\Bit_Slicing\Image.jpg'));   % Convert RGB image to grayscale
+[m, n] = size(I);                          % Get image dimensions
+
+figure;
+imshow(I);
+title('Original Grayscale Image');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Bit Plane Slicing REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Each bit plane represents a specific bit (0 to 7) of
+% the grayscale image intensity values.
+
+% Pre-allocate matrices for efficiency
+Bitp0 = zeros(m,n);
+Bitp1 = zeros(m,n);
+Bitp2 = zeros(m,n);
+Bitp3 = zeros(m,n);
+Bitp4 = zeros(m,n);
+Bitp5 = zeros(m,n);
+Bitp6 = zeros(m,n);
+Bitp7 = zeros(m,n);
+
+% Extract individual bit planes using bitwise AND operation
+for ii = 1:m
+    for jj = 1:n
+        Bitp0(ii,jj) = bitand(I(ii,jj), 1);     % 0th bit plane (LSB)
+        Bitp1(ii,jj) = bitand(I(ii,jj), 2);     % 1st bit plane
+        Bitp2(ii,jj) = bitand(I(ii,jj), 4);     % 2nd bit plane
+        Bitp3(ii,jj) = bitand(I(ii,jj), 8);     % 3rd bit plane
+        Bitp4(ii,jj) = bitand(I(ii,jj), 16);    % 4th bit plane
+        Bitp5(ii,jj) = bitand(I(ii,jj), 32);    % 5th bit plane
+        Bitp6(ii,jj) = bitand(I(ii,jj), 64);    % 6th bit plane
+        Bitp7(ii,jj) = bitand(I(ii,jj), 128);   % 7th bit plane (MSB)
+    end
+end
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Display Bit Planes REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+figure; imshow(Bitp0); title('0th Bit Plane Image');
+figure; imshow(Bitp1); title('1st Bit Plane Image');
+figure; imshow(Bitp2); title('2nd Bit Plane Image');
+figure; imshow(Bitp3); title('3rd Bit Plane Image');
+figure; imshow(Bitp4); title('4th Bit Plane Image');
+figure; imshow(Bitp5); title('5th Bit Plane Image');
+figure; imshow(Bitp6); title('6th Bit Plane Image');
+figure; imshow(Bitp7); title('7th Bit Plane Image');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Bit Plane Removal REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% In this section, selected bit planes are removed from the
+% original image to observe their impact on image quality.
+% Bit planes removed: 0th, 5th, and 7th
+
+bitpr0 = zeros(m,n);
+bitpr5 = zeros(m,n);
+bitpr7 = zeros(m,n);
+
+for ii = 1:m
+    for jj = 1:n
+        bitpr0(ii,jj) = bitand(I(ii,jj), 255 - 2^0);   % Remove 0th bit plane
+        bitpr5(ii,jj) = bitand(I(ii,jj), 255 - 2^5);   % Remove 5th bit plane
+        bitpr7(ii,jj) = bitand(I(ii,jj), 255 - 2^7);   % Remove 7th bit plane
+    end
+end
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Display Images after Bit Plane Removal REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+figure; imshow(bitpr0); title('Image with 0th Bit Plane Removed');
+figure; imshow(bitpr5); title('Image with 5th Bit Plane Removed');
+figure; imshow(bitpr7); title('Image with 7th Bit Plane Removed');
+
+##### SOURCE END #####
+--></body></html>

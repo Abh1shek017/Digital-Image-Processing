@@ -1,0 +1,237 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Huffman_Coding</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2026-01-27"><meta name="DC.source" content="Huffman_Coding.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%------------------------------------------------------------</span>
+<span class="comment">% Date        : 26/01/2026</span>
+<span class="comment">% Created by  : Abhishek Kumar Jayswal</span>
+<span class="comment">% Experiment  : Image Compression using Huffman Coding</span>
+<span class="comment">% Description :</span>
+<span class="comment">%   This program performs lossless image compression on a</span>
+<span class="comment">%   grayscale image using Huffman coding. The image is</span>
+<span class="comment">%   encoded and decoded, and the compression ratio is</span>
+<span class="comment">%   calculated.</span>
+<span class="comment">%------------------------------------------------------------</span>
+
+clc;            <span class="comment">% Clear command window</span>
+clear;          <span class="comment">% Clear workspace variables</span>
+close <span class="string">all</span>;      <span class="comment">% Close all figure windows</span>
+
+<span class="comment">%------------------ Read and Display Original Image ------------------</span>
+<span class="comment">% Read the color image from file</span>
+rgb_img = imread(<span class="string">'C:\Users\Abhishek\Desktop\DIP\Huffman_Coding\Original_Image.jpg'</span>);
+
+figure;
+imshow(rgb_img);
+title(<span class="string">'Original Color Image'</span>);
+
+<span class="comment">%------------------ Convert RGB Image to Grayscale ------------------</span>
+<span class="comment">% Huffman coding is applied on grayscale images</span>
+gray_img = rgb2gray(rgb_img);
+[rows, cols] = size(gray_img);   <span class="comment">% Image dimensions</span>
+
+figure;
+imshow(gray_img);
+title(<span class="string">'Grayscale Image'</span>);
+
+<span class="comment">%------------------ Prepare Image Data for Encoding ------------------</span>
+<span class="comment">% Convert 2D grayscale image into a 1D column vector</span>
+img_data = gray_img(:);
+
+<span class="comment">%------------------ Probability Calculation ------------------</span>
+<span class="comment">% Find unique pixel intensity values (0&#8211;255)</span>
+pixel_values = unique(img_data);
+
+<span class="comment">% Count occurrences of each pixel value</span>
+pixel_count = histc(img_data, pixel_values);
+
+<span class="comment">% Calculate probability of each pixel value</span>
+pixel_prob = pixel_count / sum(pixel_count);
+
+<span class="comment">%------------------ Huffman Dictionary Creation ------------------</span>
+<span class="comment">% Generate Huffman dictionary using pixel values and probabilities</span>
+huff_dict = huffmandict(pixel_values, pixel_prob);
+
+<span class="comment">%------------------ Huffman Encoding ------------------</span>
+<span class="comment">% Encode the grayscale image data into a binary bit stream</span>
+encoded_stream = huffmanenco(img_data, huff_dict);
+
+<span class="comment">%------------------ Huffman Decoding ------------------</span>
+<span class="comment">% Decode the binary bit stream back to pixel values</span>
+decoded_data = huffmandeco(encoded_stream, huff_dict);
+
+<span class="comment">%------------------ Reconstruct the Image ------------------</span>
+<span class="comment">% Convert decoded vector back to original image dimensions</span>
+decoded_img = uint8(reshape(decoded_data, rows, cols));
+
+figure;
+imshow(decoded_img);
+title(<span class="string">'Reconstructed Image after Huffman Coding'</span>);
+
+<span class="comment">%------------------ Compression Analysis ------------------</span>
+<span class="comment">% Calculate original image size (8 bits per pixel)</span>
+original_bits = numel(img_data) * 8;
+
+<span class="comment">% Calculate compressed image size (number of Huffman bits)</span>
+compressed_bits = length(encoded_stream);
+
+<span class="comment">% Calculate compression ratio</span>
+compression_ratio = original_bits / compressed_bits;
+
+<span class="comment">% Display compression results</span>
+fprintf(<span class="string">'Original Image Size (bits)   : %d\n'</span>, original_bits);
+fprintf(<span class="string">'Compressed Image Size (bits) : %d\n'</span>, compressed_bits);
+fprintf(<span class="string">'Compression Ratio            : %.2f\n'</span>, compression_ratio);
+</pre><pre class="codeoutput">Original Image Size (bits)   : 159694848
+Compressed Image Size (bits) : 132978884
+Compression Ratio            : 1.20
+</pre><img vspace="5" hspace="5" src="Huffman_Coding_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Date        : 26/01/2026
+% Created by  : Abhishek Kumar Jayswal
+% Experiment  : Image Compression using Huffman Coding
+% Description :
+%   This program performs lossless image compression on a
+%   grayscale image using Huffman coding. The image is
+%   encoded and decoded, and the compression ratio is
+%   calculated.
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+
+clc;            % Clear command window
+clear;          % Clear workspace variables
+close all;      % Close all figure windows
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Read and Display Original Image REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Read the color image from file
+rgb_img = imread('C:\Users\Abhishek\Desktop\DIP\Huffman_Coding\Original_Image.jpg');
+
+figure;
+imshow(rgb_img);
+title('Original Color Image');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Convert RGB Image to Grayscale REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Huffman coding is applied on grayscale images
+gray_img = rgb2gray(rgb_img);
+[rows, cols] = size(gray_img);   % Image dimensions
+
+figure;
+imshow(gray_img);
+title('Grayscale Image');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Prepare Image Data for Encoding REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Convert 2D grayscale image into a 1D column vector
+img_data = gray_img(:);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Probability Calculation REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Find unique pixel intensity values (0–255)
+pixel_values = unique(img_data);
+
+% Count occurrences of each pixel value
+pixel_count = histc(img_data, pixel_values);
+
+% Calculate probability of each pixel value
+pixel_prob = pixel_count / sum(pixel_count);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Huffman Dictionary Creation REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Generate Huffman dictionary using pixel values and probabilities
+huff_dict = huffmandict(pixel_values, pixel_prob);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Huffman Encoding REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Encode the grayscale image data into a binary bit stream
+encoded_stream = huffmanenco(img_data, huff_dict);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Huffman Decoding REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Decode the binary bit stream back to pixel values
+decoded_data = huffmandeco(encoded_stream, huff_dict);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Reconstruct the Image REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Convert decoded vector back to original image dimensions
+decoded_img = uint8(reshape(decoded_data, rows, cols));
+
+figure;
+imshow(decoded_img);
+title('Reconstructed Image after Huffman Coding');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Compression Analysis REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% Calculate original image size (8 bits per pixel)
+original_bits = numel(img_data) * 8;
+
+% Calculate compressed image size (number of Huffman bits)
+compressed_bits = length(encoded_stream);
+
+% Calculate compression ratio
+compression_ratio = original_bits / compressed_bits;
+
+% Display compression results
+fprintf('Original Image Size (bits)   : %d\n', original_bits);
+fprintf('Compressed Image Size (bits) : %d\n', compressed_bits);
+fprintf('Compression Ratio            : %.2f\n', compression_ratio);
+
+##### SOURCE END #####
+--></body></html>
